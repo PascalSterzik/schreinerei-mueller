@@ -68,8 +68,8 @@ module.exports = {
 
   images: {
     logo: '/images/logo.png',
-    hero: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1400&h=800&fit=crop&q=80',
-    about: '/images/referenzen/IMG_0270.jpg',
+    hero: '/images/referenzen/P1020294.jpg',
+    about: '/images/referenzen/IMG_0059.jpg',
     interior: '/images/referenzen/IMG_0147.jpg',
     gallery: [
       '/images/referenzen/050.jpg',

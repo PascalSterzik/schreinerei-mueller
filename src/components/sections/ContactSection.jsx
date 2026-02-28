@@ -88,14 +88,16 @@ export default function ContactSection({
               <ContactForm type={formType} />
             )}
 
-            {/* OpenStreetMap embed (no API key needed) */}
+            {/* Google Maps embed (no API key needed for iframe embeds) */}
             <div className="rounded-brand overflow-hidden shadow-brand-md h-64">
               <iframe
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${brand.business.coordinates.lng - 0.005}%2C${brand.business.coordinates.lat - 0.003}%2C${brand.business.coordinates.lng + 0.005}%2C${brand.business.coordinates.lat + 0.003}&layer=mapnik&marker=${brand.business.coordinates.lat}%2C${brand.business.coordinates.lng}`}
+                src={`https://www.google.com/maps?q=${brand.business.coordinates.lat},${brand.business.coordinates.lng}&z=15&output=embed`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
                 loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
                 title={`${b.name} Standort`}
               />
             </div>

@@ -5,7 +5,7 @@ const variants = {
   secondary: 'bg-transparent border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white',
   accent: 'bg-brand-accent hover:brightness-110 text-brand-dark shadow-brand-md hover:shadow-brand-lg',
   white: 'bg-white text-brand-dark hover:bg-gray-100 shadow-brand-md',
-  'white-outline': 'bg-transparent border-2 border-white/70 text-white hover:bg-white/10 hover:border-white',
+  'white-outline': 'bg-transparent border-2 border-white/70 text-white hover:bg-white hover:text-brand-dark hover:border-white',
   ghost: 'bg-transparent text-brand-primary hover:bg-brand-primary/10',
 }
 

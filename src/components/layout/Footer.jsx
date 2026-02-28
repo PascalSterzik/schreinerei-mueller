@@ -13,7 +13,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             {brand.images.logo ? (
-              <div className="inline-block bg-white/90 rounded-lg p-2 mb-4">
+              <div className="inline-block bg-white rounded-md p-1.5 mb-4">
                 <img src={brand.images.logo} alt={b.name} className="h-8 w-auto" />
               </div>
             ) : (
