@@ -198,8 +198,8 @@ module.exports = {
       formActionUrl: null,
     },
     googleReviews: {
-      apiKey: null,          // Google Maps API key (with Places API enabled)
-      placeId: null,         // Google Place ID for this business
+      apiKey: 'AIzaSyBK9PFigiwe2dTJet16Jokl1NqaxdNHwGI',
+      placeId: 'ChIJvz2kcMkvvkcRQhVG0xRW3gc',
     },
   },
 }
