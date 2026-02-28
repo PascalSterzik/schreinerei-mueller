@@ -209,14 +209,9 @@ export default function GoogleReviews({
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
-            // Build review URL: Google Maps direct link with reviews tab parameter
-            // The !9m1!1b1 data parameter opens the Reviews tab directly
-            let reviewsUrl = place.url // fallback: Google Maps overview
-            if (place.geometry?.location) {
-              const lat = place.geometry.location.lat()
-              const lng = place.geometry.location.lng()
-              reviewsUrl = `https://www.google.com/maps/place/${encodeURIComponent(place.name)}/@${lat},${lng},17z/data=!4m8!3m7!1s${config.placeId}!8m2!3d${lat}!4d${lng}!9m1!1b1`
-            }
+            // Use place.url from API: opens Google Maps business panel directly
+            // From there the "Rezensionen" tab is visible and one click away
+            const reviewsUrl = place.url
             const writeReviewUrl = `https://search.google.com/local/writereview?placeid=${config.placeId}`
             setPlaceData({
               rating: place.rating,
