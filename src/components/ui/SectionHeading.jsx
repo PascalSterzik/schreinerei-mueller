@@ -13,6 +13,10 @@ export default function SectionHeading({
 
   return (
     <div className={`mb-12 md:mb-16 ${alignClasses[align]} ${className}`}>
+      {/* Decorative accent line */}
+      {align === 'center' && (
+        <div className={`w-12 h-1 rounded-full mx-auto mb-6 ${light ? 'bg-white/40' : 'bg-brand-accent'}`} />
+      )}
       <h2 className={`mb-4 ${light ? 'text-white' : 'text-brand-dark'}`}>
         {title}
       </h2>

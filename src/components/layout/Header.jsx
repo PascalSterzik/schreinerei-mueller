@@ -37,7 +37,7 @@ export default function Header() {
               <img
                 src={brand.images.logo}
                 alt={brand.business.name}
-                className="h-10 w-auto"
+                className="h-10 w-auto rounded-lg"
               />
             ) : (
               <span className={`font-heading text-xl md:text-2xl font-bold tracking-tight ${

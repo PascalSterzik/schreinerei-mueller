@@ -13,7 +13,7 @@ export default function Home() {
       <HeroSection />
       <AboutSection />
       <ServiceCards />
-      <GalleryGrid title="Unsere Referenzen" subtitle="Ausgewählte Projekte aus unserer Werkstatt. Möbel, Türen, Innenausbau und Aussenarbeiten." />
+      <GalleryGrid title="Unsere Referenzen" subtitle="Ausgewählte Projekte aus unserer Werkstatt. Möbel, Türen, Innenausbau und Außenarbeiten." />
       <TestimonialSection light />
       <CTABanner />
       <FAQAccordion />

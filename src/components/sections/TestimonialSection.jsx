@@ -5,7 +5,7 @@ import brand from '../../../brand.config'
 import Container from '@/components/ui/Container'
 import SectionHeading from '@/components/ui/SectionHeading'
 
-export default function TestimonialSection({ title = 'Was unsere Gaste sagen', light = false }) {
+export default function TestimonialSection({ title = 'Was unsere Kunden sagen', light = false }) {
   const testimonials = brand.content.testimonials
   const [active, setActive] = useState(0)
 

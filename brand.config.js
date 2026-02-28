@@ -9,12 +9,12 @@
 module.exports = {
   business: {
     name: 'Schreinerei Müller',
-    tagline: 'Massarbeit aus Meisterhand',
-    description: 'Schreinerei Müller in Zeltingen-Rachtig: Ihr Meisterbetrieb für individuelle Möbel, Türen, Einbauschränke und Aussenarbeiten. Handwerkskunst mit Leidenschaft seit Jahrzehnten.',
+    tagline: 'Maßarbeit aus Meisterhand',
+    description: 'Schreinerei Müller in Zeltingen-Rachtig: Ihr Meisterbetrieb für individuelle Möbel, Türen, Einbauschränke und Außenarbeiten. Handwerkskunst mit Leidenschaft seit Jahrzehnten.',
     phone: '+49 6532 2822',
     email: 'info@schreinerei-WMZ.de',
     address: {
-      street: 'Kurfürstenstrasse 88',
+      street: 'Kurfürstenstraße 88',
       city: 'Zeltingen-Rachtig',
       zip: '54492',
       country: 'Germany',
@@ -68,9 +68,9 @@ module.exports = {
 
   images: {
     logo: '/images/logo.png',
-    hero: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1400&h=800&fit=crop&q=80',
-    about: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=800&h=600&fit=crop&q=80',
-    interior: 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=800&h=600&fit=crop&q=80',
+    hero: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1400&h=800&fit=crop&q=80',
+    about: '/images/referenzen/IMG_0270.jpg',
+    interior: '/images/referenzen/IMG_0147.jpg',
     gallery: [
       '/images/referenzen/050.jpg',
       '/images/referenzen/051.jpg',
@@ -92,12 +92,12 @@ module.exports = {
 
   seo: {
     title: 'Schreinerei Müller | Meisterbetrieb in Zeltingen-Rachtig',
-    description: 'Schreinerei Müller: Ihr Meisterbetrieb in Zeltingen-Rachtig an der Mosel. Individuelle Möbel, Türen, Einbauschränke und Aussenarbeiten. Handwerk mit Herz.',
+    description: 'Schreinerei Müller: Ihr Meisterbetrieb in Zeltingen-Rachtig an der Mosel. Individuelle Möbel, Türen, Einbauschränke und Außenarbeiten. Handwerk mit Herz.',
     locale: 'de_DE',
     language: 'de',
     servicePages: [
-      { slug: 'leistungen', title: 'Leistungen', h1: 'Unsere Leistungen', description: 'Individuelle Möbel, Türen, Einbauschränke, Treppen und mehr. Massarbeit von Ihrem Schreinermeister in Zeltingen-Rachtig.' },
-      { slug: 'referenzen', title: 'Referenzen', h1: 'Unsere Referenzen', description: 'Ausgewählte Projekte aus Jahrzehnten Schreinerarbeit. Von Möbeln bis zu Türen, von Innenausbau bis Aussengestaltung.' },
+      { slug: 'leistungen', title: 'Leistungen', h1: 'Unsere Leistungen', description: 'Individuelle Möbel, Türen, Einbauschränke, Treppen und mehr. Maßarbeit von Ihrem Schreinermeister in Zeltingen-Rachtig.' },
+      { slug: 'referenzen', title: 'Referenzen', h1: 'Unsere Referenzen', description: 'Ausgewählte Projekte aus Jahrzehnten Schreinerarbeit. Von Möbeln bis zu Türen, von Innenausbau bis Außengestaltung.' },
       { slug: 'ueber-uns', title: 'Über uns', h1: 'Über die Schreinerei Müller', description: 'Familienbetrieb in Zeltingen-Rachtig. Lernen Sie unsere Werkstatt und unsere Arbeitsweise kennen.' },
       { slug: 'angebot', title: 'Angebot anfordern', h1: 'Kostenloses Angebot', description: 'Beschreiben Sie Ihr Projekt. Wir erstellen Ihnen ein unverbindliches Angebot.' },
       { slug: 'kontakt', title: 'Kontakt', h1: 'Kontakt & Anfahrt', description: 'Besuchen Sie unsere Werkstatt in Zeltingen-Rachtig oder rufen Sie uns an.' },
@@ -119,28 +119,28 @@ module.exports = {
     },
     services: [
       {
-        title: 'Möbel nach Mass',
+        title: 'Möbel nach Maß',
         description: 'Einzelmöbel, Einbauschränke, Regale und Vitrinen. Passgenau für Ihren Wohnraum gefertigt, von der Planung bis zur Montage.',
         icon: 'sofa',
-        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop&q=80',
+        image: '/images/referenzen/IMG_0023-2.jpg',
       },
       {
         title: 'Türen & Tore',
         description: 'Haustüren, Innentüren, Scheunentore und Kirchentüren. Individuell gestaltet in Eiche, Nussbaum oder Kirsche.',
         icon: 'door-open',
-        image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=300&fit=crop&q=80',
+        image: '/images/referenzen/IMG_0115.jpg',
       },
       {
         title: 'Innenausbau',
         description: 'Treppen, Wandverkleidungen, Deckengestaltung und kompletter Innenausbau. Alles aus einer Hand.',
         icon: 'home',
-        image: 'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=400&h=600&fit=crop&q=80',
+        image: '/images/referenzen/IMG_0147.jpg',
       },
       {
-        title: 'Aussenarbeiten',
-        description: 'Gartenmöbel, Terrassengestaltung, Carports und individuelle Holzkonstruktionen für den Aussenbereich.',
+        title: 'Außenarbeiten',
+        description: 'Gartenmöbel, Terrassengestaltung, Carports und individuelle Holzkonstruktionen für den Außenbereich.',
         icon: 'tree-pine',
-        image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop&q=80',
+        image: '/images/referenzen/051.jpg',
       },
     ],
     testimonials: [
@@ -175,7 +175,7 @@ module.exports = {
       },
       {
         question: 'In welchem Umkreis sind Sie tätig?',
-        answer: 'Wir betreuen Kunden in Zeltingen-Rachtig und der gesamten Moselregion, einschliesslich Bernkastel-Kues, Traben-Trarbach, Wittlich und Umgebung.',
+        answer: 'Wir betreuen Kunden in Zeltingen-Rachtig und der gesamten Moselregion, einschließlich Bernkastel-Kues, Traben-Trarbach, Wittlich und Umgebung.',
       },
       {
         question: 'Reparieren Sie auch bestehende Möbel oder Türen?',

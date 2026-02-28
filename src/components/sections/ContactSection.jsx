@@ -67,7 +67,7 @@ export default function ContactSection({
 
             {/* Opening Hours */}
             <div className="bg-white rounded-brand p-6 shadow-brand-sm">
-              <h4 className="text-lg mb-4">Offnungszeiten</h4>
+              <h4 className="text-lg mb-4">Öffnungszeiten</h4>
               <dl className="space-y-2">
                 {b.openingHours.map((h, i) => (
                   <div key={i} className="flex justify-between">
@@ -88,16 +88,14 @@ export default function ContactSection({
               <ContactForm type={formType} />
             )}
 
-            {/* Google Maps embed */}
+            {/* OpenStreetMap embed (no API key needed) */}
             <div className="rounded-brand overflow-hidden shadow-brand-md h-64">
               <iframe
-                src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(b.address.street + ', ' + b.address.zip + ' ' + b.address.city)}`}
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${brand.business.coordinates.lng - 0.005}%2C${brand.business.coordinates.lat - 0.003}%2C${brand.business.coordinates.lng + 0.005}%2C${brand.business.coordinates.lat + 0.003}&layer=mapnik&marker=${brand.business.coordinates.lat}%2C${brand.business.coordinates.lng}`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
-                allowFullScreen
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
                 title={`${b.name} Standort`}
               />
             </div>

@@ -6,7 +6,7 @@ import Container from '@/components/ui/Container'
 import SectionHeading from '@/components/ui/SectionHeading'
 import { generateFAQSchema } from '@/lib/schema'
 
-export default function FAQAccordion({ title = 'Haufig gestellte Fragen' }) {
+export default function FAQAccordion({ title = 'Häufig gestellte Fragen' }) {
   const faqs = brand.content.faq
   const [openIndex, setOpenIndex] = useState(null)
 

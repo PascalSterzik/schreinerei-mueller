@@ -42,7 +42,7 @@ export default function AboutSection() {
                 <span className="text-3xl font-heading font-bold text-brand-accent">
                   {brand.content.credibility?.reviewCount || '200'}+
                 </span>
-                <p className="text-brand-muted text-sm mt-1">Zufriedene Gaste</p>
+                <p className="text-brand-muted text-sm mt-1">Zufriedene Kunden</p>
               </div>
             </div>
           </div>

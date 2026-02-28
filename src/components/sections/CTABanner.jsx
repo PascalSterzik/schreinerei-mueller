@@ -3,9 +3,9 @@ import Container from '@/components/ui/Container'
 import Button from '@/components/ui/Button'
 
 export default function CTABanner({
-  headline = 'Bereit fur ein unvergessliches Erlebnis?',
-  text = 'Reservieren Sie jetzt Ihren Tisch und geniessen Sie einen besonderen Abend.',
-  ctaText = 'Jetzt reservieren',
+  headline = 'Ihr Projekt verdient Handwerksqualität',
+  text = 'Lassen Sie sich unverbindlich beraten. Wir finden gemeinsam die beste Lösung für Ihr Vorhaben.',
+  ctaText = 'Jetzt anrufen',
   ctaHref,
   variant = 'primary',
 }) {

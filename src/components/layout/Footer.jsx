@@ -13,7 +13,9 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             {brand.images.logo ? (
-              <img src={brand.images.logo} alt={b.name} className="h-10 w-auto mb-4 brightness-0 invert" />
+              <div className="inline-block bg-white/90 rounded-lg p-2 mb-4">
+                <img src={brand.images.logo} alt={b.name} className="h-8 w-auto" />
+              </div>
             ) : (
               <h3 className="text-white text-xl mb-4">{b.name}</h3>
             )}
@@ -58,7 +60,7 @@ export default function Footer() {
 
           {/* Opening Hours */}
           <div>
-            <h4 className="text-white text-base font-semibold mb-4 font-body">Offnungszeiten</h4>
+            <h4 className="text-white text-base font-semibold mb-4 font-body">Öffnungszeiten</h4>
             <dl className="space-y-1 text-sm">
               {b.openingHours.map((h, i) => (
                 <div key={i} className="flex justify-between gap-4">
