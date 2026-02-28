@@ -204,15 +204,19 @@ export default function GoogleReviews({
       service.getDetails(
         {
           placeId: config.placeId,
-          fields: ['reviews', 'rating', 'user_ratings_total', 'name', 'url'],
+          fields: ['reviews', 'rating', 'user_ratings_total', 'name', 'url', 'geometry'],
           language: 'de',
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
-            // Build review URL: Google Search for "[Business Name] Rezensionen/Reviews"
-            // This reliably shows the reviews panel in Google Search results
-            const lang = brand.seo?.locale?.startsWith('de') ? 'Rezensionen' : 'Reviews'
-            const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(place.name + ' ' + lang)}`
+            // Build review URL: Google Maps direct link with reviews tab parameter
+            // The !9m1!1b1 data parameter opens the Reviews tab directly
+            let reviewsUrl = place.url // fallback: Google Maps overview
+            if (place.geometry?.location) {
+              const lat = place.geometry.location.lat()
+              const lng = place.geometry.location.lng()
+              reviewsUrl = `https://www.google.com/maps/place/${encodeURIComponent(place.name)}/@${lat},${lng},17z/data=!4m8!3m7!1s${config.placeId}!8m2!3d${lat}!4d${lng}!9m1!1b1`
+            }
             const writeReviewUrl = `https://search.google.com/local/writereview?placeid=${config.placeId}`
             setPlaceData({
               rating: place.rating,
