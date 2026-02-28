@@ -182,7 +182,7 @@ export default function GoogleReviews({
             return
           }
           const script = document.createElement('script')
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places`
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${config.apiKey}&libraries=places&language=de`
           script.async = true
           script.onload = () => resolve()
           script.onerror = () => reject(new Error('Failed to load Google Maps'))
@@ -205,14 +205,20 @@ export default function GoogleReviews({
         {
           placeId: config.placeId,
           fields: ['reviews', 'rating', 'user_ratings_total', 'name', 'url'],
+          language: 'de',
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
+            // Build direct review-tab URL using Place ID
+            const reviewsUrl = `https://search.google.com/local/reviews?placeid=${config.placeId}`
+            const writeReviewUrl = `https://search.google.com/local/writereview?placeid=${config.placeId}`
             setPlaceData({
               rating: place.rating,
               totalReviews: place.user_ratings_total,
               name: place.name,
               url: place.url,
+              reviewsUrl,
+              writeReviewUrl,
             })
             setReviews(place.reviews || [])
           } else {
@@ -290,9 +296,9 @@ export default function GoogleReviews({
                 </p>
               </div>
             </div>
-            {placeData.url && (
+            {placeData.reviewsUrl && (
               <a
-                href={placeData.url}
+                href={placeData.reviewsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-flex items-center gap-2 text-sm font-medium mt-2 no-underline ${
@@ -323,10 +329,10 @@ export default function GoogleReviews({
         </div>
 
         {/* CTA to leave a review */}
-        {placeData?.url && (
+        {placeData?.writeReviewUrl && (
           <div className="text-center mt-10 reveal">
             <a
-              href={placeData.url}
+              href={placeData.writeReviewUrl}
               target="_blank"
               rel="noopener noreferrer"
               className={`inline-flex items-center gap-2 px-6 py-3 rounded-brand text-sm font-semibold no-underline transition-all duration-300 ${
