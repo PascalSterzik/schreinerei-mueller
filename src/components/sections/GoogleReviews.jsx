@@ -209,8 +209,10 @@ export default function GoogleReviews({
         },
         (place, status) => {
           if (status === window.google.maps.places.PlacesServiceStatus.OK && place) {
-            // Build direct review-tab URL using Place ID
-            const reviewsUrl = `https://search.google.com/local/reviews?placeid=${config.placeId}`
+            // Build review URL: Google Search for "[Business Name] Rezensionen/Reviews"
+            // This reliably shows the reviews panel in Google Search results
+            const lang = brand.seo?.locale?.startsWith('de') ? 'Rezensionen' : 'Reviews'
+            const reviewsUrl = `https://www.google.com/search?q=${encodeURIComponent(place.name + ' ' + lang)}`
             const writeReviewUrl = `https://search.google.com/local/writereview?placeid=${config.placeId}`
             setPlaceData({
               rating: place.rating,
