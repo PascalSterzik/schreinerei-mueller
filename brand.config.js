@@ -143,23 +143,9 @@ module.exports = {
         image: '/images/referenzen/051.jpg',
       },
     ],
-    testimonials: [
-      {
-        name: 'Familie Schneider',
-        text: 'Herr Müller hat für uns eine komplette Einbauküche und Garderobe gefertigt. Die Qualität ist erstklassig, jedes Detail stimmt. Absolute Empfehlung!',
-        rating: 5,
-      },
-      {
-        name: 'Weingut Becker',
-        text: 'Unsere neue Eingangstür aus Eiche ist ein echtes Schmuckstück. Herr Müller hat unsere Vorstellungen perfekt umgesetzt. Handwerk, wie man es sich wünscht.',
-        rating: 5,
-      },
-      {
-        name: 'Peter K.',
-        text: 'Zuverlässig, sauber und pünktlich. Die Einbauschränke passen wie angegossen. Preis-Leistung ist hervorragend.',
-        rating: 5,
-      },
-    ],
+    // Fallback testimonials: shown ONLY when Google Reviews API is not configured.
+    // Once integrations.googleReviews.apiKey is set, live Google Reviews replace these.
+    testimonials: [],
     faq: [
       {
         question: 'Welche Holzarten verwenden Sie?',
@@ -183,8 +169,8 @@ module.exports = {
       },
     ],
     credibility: {
-      rating: 4.9,
-      reviewCount: 48,
+      rating: 5.0,
+      reviewCount: 5,
       reviewSource: 'Google',
       badges: ['Meisterbetrieb', 'Familienbetrieb'],
     },
@@ -210,6 +196,10 @@ module.exports = {
     emailMarketing: {
       provider: null,
       formActionUrl: null,
+    },
+    googleReviews: {
+      apiKey: null,          // Google Maps API key (with Places API enabled)
+      placeId: null,         // Google Place ID for this business
     },
   },
 }
