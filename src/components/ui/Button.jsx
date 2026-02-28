@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 const variants = {
-  primary: 'bg-brand-primary hover:bg-brand-primary-dark text-white shadow-brand-md hover:shadow-brand-lg',
+  primary: 'bg-brand-primary hover:bg-brand-dark text-white hover:text-white shadow-brand-md hover:shadow-brand-lg',
   secondary: 'bg-transparent border-2 border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-white',
   accent: 'bg-brand-accent hover:brightness-110 text-brand-dark shadow-brand-md hover:shadow-brand-lg',
   white: 'bg-white text-brand-dark hover:bg-gray-100 shadow-brand-md',

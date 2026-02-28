@@ -5,8 +5,8 @@ import Button from '@/components/ui/Button'
 export default function CTABanner({
   headline = 'Ihr Projekt verdient Handwerksqualität',
   text = 'Lassen Sie sich unverbindlich beraten. Wir finden gemeinsam die beste Lösung für Ihr Vorhaben.',
-  ctaText = 'Jetzt anrufen',
-  ctaHref,
+  ctaText = 'Angebot anfordern',
+  ctaHref = '/angebot',
   variant = 'primary',
 }) {
   const bgClass = variant === 'primary'

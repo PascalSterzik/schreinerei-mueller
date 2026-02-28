@@ -89,9 +89,9 @@ export default function ContactSection({
             )}
 
             {/* Google Maps embed (no API key needed for iframe embeds) */}
-            <div className="rounded-brand overflow-hidden shadow-brand-md h-64">
+            <div className="rounded-brand overflow-hidden shadow-brand-md h-80">
               <iframe
-                src={`https://www.google.com/maps?q=${brand.business.coordinates.lat},${brand.business.coordinates.lng}&z=15&output=embed`}
+                src={`https://www.google.com/maps?q=${encodeURIComponent(b.name + ' ' + b.address.street + ' ' + b.address.zip + ' ' + b.address.city)}&z=15&output=embed`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

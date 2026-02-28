@@ -68,8 +68,8 @@ module.exports = {
 
   images: {
     logo: '/images/logo.png',
-    hero: '/images/referenzen/P1020294.jpg',
-    about: '/images/referenzen/IMG_0059.jpg',
+    hero: '/images/hero-holz.jpg',
+    about: '/images/about-handwerk.png',
     interior: '/images/referenzen/IMG_0147.jpg',
     gallery: [
       '/images/referenzen/050.jpg',

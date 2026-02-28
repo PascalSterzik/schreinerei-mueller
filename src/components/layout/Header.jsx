@@ -34,11 +34,13 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 no-underline">
             {brand.images.logo ? (
-              <img
-                src={brand.images.logo}
-                alt={brand.business.name}
-                className="h-10 w-auto rounded-lg"
-              />
+              <div className="inline-block bg-white rounded-md p-1.5">
+                <img
+                  src={brand.images.logo}
+                  alt={brand.business.name}
+                  className="h-8 w-auto"
+                />
+              </div>
             ) : (
               <span className={`font-heading text-xl md:text-2xl font-bold tracking-tight ${
                 isScrolled ? 'text-brand-dark' : 'text-white'
