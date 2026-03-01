@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://schreinerei-mueller.vercel.app/sitemap.xml
+
+# Block crawling of duplicate/internal assets
+Disallow: /images/referenzen/*.jpg$
