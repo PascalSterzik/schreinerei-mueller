@@ -161,10 +161,15 @@
   const reviewsLoading = document.getElementById('google-reviews-loading');
 
   if (reviewsContainer && window.GOOGLE_PLACE_ID) {
+    // Create a div attached to the DOM for PlacesService
+    var placesDiv = document.createElement('div');
+    placesDiv.style.display = 'none';
+    document.body.appendChild(placesDiv);
+
     function tryLoadReviews() {
       if (window.google && window.google.maps && window.google.maps.places) {
         try {
-          const service = new google.maps.places.PlacesService(document.createElement('div'));
+          var service = new google.maps.places.PlacesService(placesDiv);
           service.getDetails(
             {
               placeId: window.GOOGLE_PLACE_ID,
@@ -172,23 +177,28 @@
               language: 'de'
             },
             function (place, status) {
-              if (status === google.maps.places.PlacesServiceStatus.OK && place.reviews && place.reviews.length > 0) {
+              console.log('Places API status:', status);
+              if (status === google.maps.places.PlacesServiceStatus.OK && place && place.reviews && place.reviews.length > 0) {
+                renderGoogleReviews(place);
+              } else if (status === google.maps.places.PlacesServiceStatus.OK && place && place.rating) {
+                // Place found but no review text (only rating)
                 renderGoogleReviews(place);
               } else {
-                showError('Bewertungen konnten nicht geladen werden. Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/Schreinerei+M%C3%BCller/" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
+                showError('Bewertungen konnten nicht geladen werden (Status: ' + status + '). Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/?q=place_id:' + window.GOOGLE_PLACE_ID + '" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
               }
             }
           );
         } catch (e) {
+          console.error('Places API error:', e);
           showError('Bewertungen konnten nicht geladen werden.');
         }
       } else {
         if (!tryLoadReviews._attempts) tryLoadReviews._attempts = 0;
         tryLoadReviews._attempts++;
-        if (tryLoadReviews._attempts < 20) {
+        if (tryLoadReviews._attempts < 30) {
           setTimeout(tryLoadReviews, 500);
         } else {
-          showError('Google Maps konnte nicht geladen werden. Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/Schreinerei+M%C3%BCller/" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
+          showError('Google Maps konnte nicht geladen werden. Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/?q=place_id:' + window.GOOGLE_PLACE_ID + '" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
         }
       }
     }
@@ -220,7 +230,7 @@
       }
 
       // All review cards (show ALL reviews, not truncated)
-      var reviews = place.reviews;
+      var reviews = place.reviews || [];
       var html = '';
       reviews.forEach(function (review) {
         html += '<div class="testimonial-card fade-up">';
