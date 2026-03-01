@@ -155,54 +155,35 @@
     }
   }
 
-  // Google Reviews (real Google Places API only, no fake fallback)
+  // Google Reviews (New Places API — Place class with fetchFields)
   const reviewsContainer = document.getElementById('google-reviews');
   const reviewsSummary = document.getElementById('google-reviews-summary');
   const reviewsLoading = document.getElementById('google-reviews-loading');
 
   if (reviewsContainer && window.GOOGLE_PLACE_ID) {
-    // Create a div attached to the DOM for PlacesService
-    var placesDiv = document.createElement('div');
-    placesDiv.style.display = 'none';
-    document.body.appendChild(placesDiv);
+    loadGoogleReviews();
 
-    function tryLoadReviews() {
-      if (window.google && window.google.maps && window.google.maps.places) {
-        try {
-          var service = new google.maps.places.PlacesService(placesDiv);
-          service.getDetails(
-            {
-              placeId: window.GOOGLE_PLACE_ID,
-              fields: ['reviews', 'rating', 'user_ratings_total', 'url'],
-              language: 'de'
-            },
-            function (place, status) {
-              console.log('Places API status:', status);
-              if (status === google.maps.places.PlacesServiceStatus.OK && place && place.reviews && place.reviews.length > 0) {
-                renderGoogleReviews(place);
-              } else if (status === google.maps.places.PlacesServiceStatus.OK && place && place.rating) {
-                // Place found but no review text (only rating)
-                renderGoogleReviews(place);
-              } else {
-                showError('Bewertungen konnten nicht geladen werden (Status: ' + status + '). Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/?q=place_id:' + window.GOOGLE_PLACE_ID + '" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
-              }
-            }
-          );
-        } catch (e) {
-          console.error('Places API error:', e);
-          showError('Bewertungen konnten nicht geladen werden.');
-        }
-      } else {
-        if (!tryLoadReviews._attempts) tryLoadReviews._attempts = 0;
-        tryLoadReviews._attempts++;
-        if (tryLoadReviews._attempts < 30) {
-          setTimeout(tryLoadReviews, 500);
-        } else {
-          showError('Google Maps konnte nicht geladen werden. Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/?q=place_id:' + window.GOOGLE_PLACE_ID + '" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
-        }
+    async function loadGoogleReviews() {
+      try {
+        // Import the Places library using the new API
+        var { Place } = await google.maps.importLibrary('places');
+        console.log('Places library loaded successfully');
+
+        // Create a Place instance with the place ID
+        var place = new Place({ id: window.GOOGLE_PLACE_ID });
+
+        // Fetch the fields we need
+        await place.fetchFields({
+          fields: ['rating', 'userRatingCount', 'reviews', 'googleMapsURI']
+        });
+
+        console.log('Place data fetched:', place.rating, place.userRatingCount, (place.reviews || []).length + ' reviews');
+        renderGoogleReviews(place);
+      } catch (e) {
+        console.error('Places API error:', e);
+        showError('Bewertungen konnten nicht geladen werden. Bitte besuchen Sie unser <a href="https://www.google.com/maps/place/?q=place_id:' + window.GOOGLE_PLACE_ID + '" target="_blank" rel="noopener" style="color:var(--walnut); text-decoration:underline;">Google Maps Profil</a>.');
       }
     }
-    tryLoadReviews();
 
     function showError(msg) {
       if (reviewsLoading) reviewsLoading.innerHTML = '<p>' + msg + '</p>';
@@ -221,15 +202,15 @@
           summaryHtml += s < Math.round(place.rating) ? starSvg : emptyStarSvg;
         }
         summaryHtml += '</div>';
-        if (place.user_ratings_total) {
-          summaryHtml += '<span style="color:var(--text-light);">' + place.user_ratings_total + ' Bewertungen auf Google</span>';
+        if (place.userRatingCount) {
+          summaryHtml += '<span style="color:var(--text-light);">' + place.userRatingCount + ' Bewertungen auf Google</span>';
         }
         reviewsSummary.innerHTML = summaryHtml;
         reviewsSummary.style.display = '';
         observer.observe(reviewsSummary);
       }
 
-      // All review cards (show ALL reviews, not truncated)
+      // All review cards
       var reviews = place.reviews || [];
       var html = '';
       reviews.forEach(function (review) {
@@ -239,11 +220,14 @@
           html += r < review.rating ? starSvg : emptyStarSvg;
         }
         html += '</div>';
-        var text = review.text || '';
+        // New API: review.text is a string directly (or use review.text if available)
+        var text = (review.text != null ? review.text : '');
         html += '<p class="testimonial-text">' + text + '</p>';
-        html += '<span class="testimonial-author">' + (review.author_name || 'Google Nutzer');
-        if (review.relative_time_description) {
-          html += ' <span style="color:var(--text-light); font-weight:400;">&middot; ' + review.relative_time_description + '</span>';
+        // New API: author info is in review.authorAttribution
+        var authorName = (review.authorAttribution && review.authorAttribution.displayName) ? review.authorAttribution.displayName : 'Google Nutzer';
+        html += '<span class="testimonial-author">' + authorName;
+        if (review.relativePublishTimeDescription) {
+          html += ' <span style="color:var(--text-light); font-weight:400;">&middot; ' + review.relativePublishTimeDescription + '</span>';
         }
         html += '</span>';
         html += '</div>';
