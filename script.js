@@ -160,6 +160,7 @@
   const reviewsFallback = document.getElementById('google-reviews-fallback');
 
   if (reviewsContainer && reviewsFallback) {
+    // Fallback is visible by default; we only hide it if live API reviews load successfully
     function tryLoadReviews() {
       if (window.google && window.google.maps && window.google.maps.places && window.GOOGLE_PLACE_ID) {
         try {
@@ -173,41 +174,29 @@
             function (place, status) {
               if (status === google.maps.places.PlacesServiceStatus.OK && place.reviews && place.reviews.length > 0) {
                 renderGoogleReviews(place);
-              } else {
-                showFallback();
               }
+              // On failure: fallback already visible, do nothing
             }
           );
         } catch (e) {
-          showFallback();
+          // Fallback already visible, do nothing
         }
       } else if (window.GOOGLE_PLACE_ID) {
-        // API not loaded yet, retry in 500ms (up to 10 attempts)
         if (!tryLoadReviews._attempts) tryLoadReviews._attempts = 0;
         tryLoadReviews._attempts++;
         if (tryLoadReviews._attempts < 10) {
           setTimeout(tryLoadReviews, 500);
-        } else {
-          showFallback();
         }
-      } else {
-        showFallback();
+        // After 10 attempts: fallback already visible, do nothing
       }
     }
     tryLoadReviews();
 
-    function showFallback() {
-      reviewsFallback.style.display = '';
-      reviewsFallback.querySelectorAll('.fade-up').forEach(function (el) {
-        observer.observe(el);
-      });
-      // Assign stagger indices
-      Array.from(reviewsFallback.children).forEach(function (child, i) {
-        child.style.setProperty('--i', i);
-      });
-    }
-
     function renderGoogleReviews(place) {
+      // Hide fallback, show API container
+      reviewsFallback.style.display = 'none';
+      reviewsContainer.style.display = '';
+
       var reviews = place.reviews.slice(0, 5);
       var starSvg = '<svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
       var emptyStarSvg = '<svg class="star star-empty" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
