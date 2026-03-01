@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Reviews Test</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 700px; margin: 40px auto; padding: 20px; }
+.log { background: #f4f4f4; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 14px; white-space: pre-wrap; word-break: break-all; }
+.ok { border-color: #4caf50; background: #e8f5e9; }
+.err { border-color: #f44336; background: #ffebee; }
+.warn { border-color: #ff9800; background: #fff3e0; }
+h1 { font-size: 1.5rem; }
+</style>
+</head>
+<body>
+<h1>Google Reviews Debug Test</h1>
+<p>Diese Seite testet den API Key und die Places API Schritt fuer Schritt.</p>
+<div id="output"></div>
+
+<script>
+var out = document.getElementById('output');
+function log(msg, type) {
+  var d = document.createElement('div');
+  d.className = 'log ' + (type || '');
+  d.textContent = msg;
+  out.appendChild(d);
+}
+
+var API_KEY = 'AIzaSyCxSjk8YJg0bUVPE_UIsEz8SEZ1JFPi0aA';
+var PLACE_ID = 'ChIJvz2kcMkvvkcRQhVG0xRW3gc';
+
+log('API Key: ' + API_KEY.substring(0, 15) + '...');
+log('Place ID: ' + PLACE_ID);
+log('Page URL: ' + window.location.href);
+log('Referrer: ' + (document.referrer || '(leer)'));
+log('---');
+
+// Step 1: Load Google Maps JS API
+log('Schritt 1: Google Maps JS API laden...');
+
+var script = document.createElement('script');
+script.src = 'https://maps.googleapis.com/maps/api/js?key=' + API_KEY + '&libraries=places&v=weekly&callback=onMapsLoaded';
+script.onerror = function() {
+  log('FEHLER: Google Maps Script konnte nicht geladen werden!', 'err');
+};
+document.head.appendChild(script);
+
+window.onMapsLoaded = async function() {
+  log('Schritt 1 OK: Google Maps JS API geladen.', 'ok');
+  log('google.maps version: ' + (google.maps.version || 'unbekannt'));
+  log('---');
+
+  // Step 2: Import Places library
+  log('Schritt 2: Places Library importieren...');
+  try {
+    var placesLib = await google.maps.importLibrary('places');
+    log('Schritt 2 OK: Places Library importiert. Verfuegbare Klassen: ' + Object.keys(placesLib).join(', '), 'ok');
+    log('---');
+
+    if (!placesLib.Place) {
+      log('FEHLER: Place Klasse nicht verfuegbar! Nur alte API vorhanden.', 'err');
+      return;
+    }
+
+    // Step 3: Create Place instance
+    log('Schritt 3: Place Instanz erstellen...');
+    var place = new placesLib.Place({ id: PLACE_ID });
+    log('Schritt 3 OK: Place Instanz erstellt.', 'ok');
+    log('---');
+
+    // Step 4: Minimal fetch (just displayName)
+    log('Schritt 4: Minimaler fetchFields Test (nur displayName)...');
+    try {
+      await place.fetchFields({ fields: ['displayName'] });
+      log('Schritt 4 OK: displayName = ' + (place.displayName || 'null'), 'ok');
+    } catch (e4) {
+      log('Schritt 4 FEHLER: ' + e4.message, 'err');
+      log('Error code: ' + (e4.code || 'keiner'), 'err');
+      log('Vollstaendiger Fehler: ' + JSON.stringify(e4, Object.getOwnPropertyNames(e4), 2), 'err');
+      log('---');
+      log('DIAGNOSE: Der API Key funktioniert nicht mit fetchFields.', 'warn');
+      log('Moegliche Ursachen:', 'warn');
+      log('1. HTTP Referrer Einschraenkung blockiert diese Domain', 'warn');
+      log('2. "Places API (New)" ist nicht aktiviert', 'warn');
+      log('3. Billing ist nicht aktiv im Google Cloud Projekt', 'warn');
+      log('4. Der API Key ist deaktiviert oder ungueltig', 'warn');
+      return;
+    }
+    log('---');
+
+    // Step 5: Fetch reviews
+    log('Schritt 5: Reviews abrufen...');
+    try {
+      // Need new Place instance for fresh fetch
+      var place2 = new placesLib.Place({ id: PLACE_ID });
+      await place2.fetchFields({ fields: ['rating', 'userRatingCount', 'reviews'] });
+      log('Schritt 5 OK!', 'ok');
+      log('Rating: ' + (place2.rating || 'null'));
+      log('Anzahl Bewertungen: ' + (place2.userRatingCount || 'null'));
+      var reviews = place2.reviews || [];
+      log('Reviews geladen: ' + reviews.length);
+      reviews.forEach(function(r, i) {
+        log('Review ' + (i+1) + ': ' + (r.authorAttribution ? r.authorAttribution.displayName : 'Anonym') + ' - ' + r.rating + ' Sterne');
+      });
+    } catch (e5) {
+      log('Schritt 5 FEHLER: ' + e5.message, 'err');
+      log('Vollstaendiger Fehler: ' + JSON.stringify(e5, Object.getOwnPropertyNames(e5), 2), 'err');
+    }
+
+  } catch (e2) {
+    log('Schritt 2 FEHLER: ' + e2.message, 'err');
+    log('Vollstaendiger Fehler: ' + JSON.stringify(e2, Object.getOwnPropertyNames(e2), 2), 'err');
+  }
+};
+</script>
+</body>
+</html>
