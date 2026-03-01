@@ -160,30 +160,41 @@
   const reviewsFallback = document.getElementById('google-reviews-fallback');
 
   if (reviewsContainer && reviewsFallback) {
-    // Check if Google Places API is available (loaded via script tag with API key)
-    if (window.google && window.google.maps && window.google.maps.places) {
-      try {
-        const service = new google.maps.places.PlacesService(document.createElement('div'));
-        service.getDetails(
-          {
-            placeId: window.GOOGLE_PLACE_ID || '',
-            fields: ['reviews', 'rating', 'user_ratings_total', 'url'],
-            language: 'de'
-          },
-          function (place, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK && place.reviews && place.reviews.length > 0) {
-              renderGoogleReviews(place);
-            } else {
-              showFallback();
+    function tryLoadReviews() {
+      if (window.google && window.google.maps && window.google.maps.places && window.GOOGLE_PLACE_ID) {
+        try {
+          const service = new google.maps.places.PlacesService(document.createElement('div'));
+          service.getDetails(
+            {
+              placeId: window.GOOGLE_PLACE_ID,
+              fields: ['reviews', 'rating', 'user_ratings_total', 'url'],
+              language: 'de'
+            },
+            function (place, status) {
+              if (status === google.maps.places.PlacesServiceStatus.OK && place.reviews && place.reviews.length > 0) {
+                renderGoogleReviews(place);
+              } else {
+                showFallback();
+              }
             }
-          }
-        );
-      } catch (e) {
+          );
+        } catch (e) {
+          showFallback();
+        }
+      } else if (window.GOOGLE_PLACE_ID) {
+        // API not loaded yet, retry in 500ms (up to 10 attempts)
+        if (!tryLoadReviews._attempts) tryLoadReviews._attempts = 0;
+        tryLoadReviews._attempts++;
+        if (tryLoadReviews._attempts < 10) {
+          setTimeout(tryLoadReviews, 500);
+        } else {
+          showFallback();
+        }
+      } else {
         showFallback();
       }
-    } else {
-      showFallback();
     }
+    tryLoadReviews();
 
     function showFallback() {
       reviewsFallback.style.display = '';
