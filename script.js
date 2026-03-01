@@ -155,6 +155,97 @@
     }
   }
 
+  // Google Reviews
+  const reviewsContainer = document.getElementById('google-reviews');
+  const reviewsFallback = document.getElementById('google-reviews-fallback');
+
+  if (reviewsContainer && reviewsFallback) {
+    // Check if Google Places API is available (loaded via script tag with API key)
+    if (window.google && window.google.maps && window.google.maps.places) {
+      try {
+        const service = new google.maps.places.PlacesService(document.createElement('div'));
+        service.getDetails(
+          {
+            placeId: window.GOOGLE_PLACE_ID || '',
+            fields: ['reviews', 'rating', 'user_ratings_total', 'url'],
+            language: 'de'
+          },
+          function (place, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK && place.reviews && place.reviews.length > 0) {
+              renderGoogleReviews(place);
+            } else {
+              showFallback();
+            }
+          }
+        );
+      } catch (e) {
+        showFallback();
+      }
+    } else {
+      showFallback();
+    }
+
+    function showFallback() {
+      reviewsFallback.style.display = '';
+      reviewsFallback.querySelectorAll('.fade-up').forEach(function (el) {
+        observer.observe(el);
+      });
+      // Assign stagger indices
+      Array.from(reviewsFallback.children).forEach(function (child, i) {
+        child.style.setProperty('--i', i);
+      });
+    }
+
+    function renderGoogleReviews(place) {
+      var reviews = place.reviews.slice(0, 5);
+      var starSvg = '<svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+      var emptyStarSvg = '<svg class="star star-empty" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+      // Summary bar
+      if (place.rating && place.user_ratings_total) {
+        var summaryHtml = '<div class="reviews-summary fade-up" style="text-align:center; margin-bottom:40px;">';
+        summaryHtml += '<span style="font-size:2.5rem; font-weight:600; color:var(--walnut);">' + place.rating.toFixed(1) + '</span>';
+        summaryHtml += '<div class="stars" style="justify-content:center; margin:8px 0;">';
+        for (var s = 0; s < 5; s++) {
+          summaryHtml += s < Math.round(place.rating) ? starSvg : emptyStarSvg;
+        }
+        summaryHtml += '</div>';
+        summaryHtml += '<span style="color:var(--text-light);">' + place.user_ratings_total + ' Bewertungen auf Google</span>';
+        summaryHtml += '</div>';
+        reviewsContainer.insertAdjacentHTML('beforebegin', summaryHtml);
+      }
+
+      // Review cards
+      var html = '';
+      reviews.forEach(function (review) {
+        html += '<div class="testimonial-card fade-up">';
+        html += '<div class="stars" style="margin-bottom:16px;">';
+        for (var r = 0; r < 5; r++) {
+          html += r < review.rating ? starSvg : emptyStarSvg;
+        }
+        html += '</div>';
+        var text = review.text || '';
+        if (text.length > 200) text = text.substring(0, 200) + '...';
+        html += '<p class="testimonial-text">' + text + '</p>';
+        html += '<span class="testimonial-author">' + (review.author_name || 'Google Nutzer') + '</span>';
+        html += '</div>';
+      });
+      reviewsContainer.innerHTML = html;
+
+      // Re-observe for scroll animations
+      reviewsContainer.querySelectorAll('.fade-up').forEach(function (el) {
+        observer.observe(el);
+      });
+      Array.from(reviewsContainer.children).forEach(function (child, i) {
+        child.style.setProperty('--i', i);
+      });
+
+      // Also animate summary
+      var summary = document.querySelector('.reviews-summary');
+      if (summary) observer.observe(summary);
+    }
+  }
+
   // Contact form (demo mode)
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {

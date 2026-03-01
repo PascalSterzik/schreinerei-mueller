@@ -323,6 +323,48 @@ p:last-child { margin-bottom: 0; }
 }
 .mobile-nav .nav-link::after { display: none; }
 
+/* Header dark variant — for pages with dark hero backgrounds */
+.header-dark .nav-link { color: rgba(250, 246, 240, 0.75); }
+.header-dark .nav-link:hover { color: var(--cream); }
+.header-dark .nav-link.active { color: var(--cream); }
+.header-dark .nav-link::after { background: var(--cream); }
+.header-dark .header-logo-text { color: var(--cream); }
+.header-dark .hamburger span { background: var(--cream); }
+.header-dark .header-cta {
+  background: rgba(250, 246, 240, 0.15);
+  color: var(--cream);
+  border: 1px solid rgba(250, 246, 240, 0.3);
+}
+.header-dark .header-cta:hover {
+  background: var(--brass);
+  color: var(--dark);
+  border-color: var(--brass);
+}
+/* When scrolled, revert to standard dark-on-light header */
+.header-dark.scrolled .nav-link { color: var(--text-light); }
+.header-dark.scrolled .nav-link:hover { color: var(--walnut); }
+.header-dark.scrolled .nav-link.active { color: var(--walnut); }
+.header-dark.scrolled .nav-link::after { background: var(--brass); }
+.header-dark.scrolled .header-logo-text { color: var(--walnut); }
+.header-dark.scrolled .hamburger span { background: var(--walnut); }
+.header-dark.scrolled .header-cta {
+  background: var(--brass);
+  color: var(--dark);
+  border: none;
+}
+.header-dark.scrolled .header-cta:hover { background: var(--brass-hover); }
+
+/* Footer logo */
+.footer-brand img { opacity: 0.75; }
+
+/* btn-outline-light — for light section CTAs */
+.btn-outline-light {
+  background: transparent;
+  color: var(--walnut);
+  border: 1.5px solid var(--walnut);
+}
+.btn-outline-light:hover { background: var(--walnut); color: var(--cream); }
+
 /* 7. Footer
    ========================================================================== */
 .footer {
