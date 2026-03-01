@@ -9,8 +9,13 @@ body { font-family: system-ui, sans-serif; max-width: 700px; margin: 40px auto; 
 .input-area { background: #f0f0f0; border-radius: 12px; padding: 24px; margin: 20px 0; }
 .input-area label { font-weight: 600; display: block; margin-bottom: 8px; }
 .input-area input { width: 100%; padding: 12px; font-size: 16px; border: 2px solid #ccc; border-radius: 8px; font-family: monospace; box-sizing: border-box; }
-.input-area button { margin-top: 12px; padding: 12px 32px; font-size: 16px; font-weight: 600; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer; }
-.input-area button:hover { background: #388e3c; }
+.btn { margin-top: 12px; padding: 12px 24px; font-size: 16px; font-weight: 600; color: white; border: none; border-radius: 8px; cursor: pointer; margin-right: 8px; }
+.btn-green { background: #4caf50; }
+.btn-green:hover { background: #388e3c; }
+.btn-blue { background: #2196f3; }
+.btn-blue:hover { background: #1565c0; }
+.btn-orange { background: #ff9800; }
+.btn-orange:hover { background: #e65100; }
 .log { background: #f4f4f4; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; font-family: monospace; font-size: 14px; white-space: pre-wrap; word-break: break-all; }
 .ok { border-color: #4caf50; background: #e8f5e9; }
 .err { border-color: #f44336; background: #ffebee; }
@@ -24,22 +29,24 @@ h2 { font-size: 1.2rem; margin-top: 32px; }
 </head>
 <body>
 <h1>Google Reviews Test</h1>
-<p>Paste deinen API Key ein und klick "Testen". Kein Deployment noetig.</p>
 
 <div class="input-area">
   <label>Google Maps API Key:</label>
-  <input type="text" id="apiKeyInput" value="AIzaSyCxSjk8YJg0bUVPE_UIsEz8SEZ1JFPi0aA" placeholder="AIza...">
+  <input type="text" id="apiKeyInput" value="AIzaSyCxSjk8YJg0bUVPE_UIsEz8SEZ1JFPi0aA">
   <br>
   <label style="margin-top:12px;">Place ID:</label>
   <input type="text" id="placeIdInput" value="ChIJvz2kcMkvvkcRQhVG0xRW3gc">
   <br>
-  <button onclick="startTest()">Testen</button>
+  <button class="btn btn-blue" onclick="testREST()">Test 1: REST API (direkt)</button>
+  <button class="btn btn-green" onclick="testJSSDK()">Test 2: JS SDK (fetchFields)</button>
+  <button class="btn btn-orange" onclick="testNewKey()">Neuen Key erstellen + testen</button>
 </div>
 
 <div id="output"></div>
 
 <script>
 var out = document.getElementById('output');
+function clearOutput() { out.innerHTML = ''; }
 function log(msg, type) {
   var d = document.createElement('div');
   d.className = 'log ' + (type || '');
@@ -51,133 +58,158 @@ function heading(text) {
   h.textContent = text;
   out.appendChild(h);
 }
-function showReview(review) {
-  var d = document.createElement('div');
-  d.className = 'review-card';
-  var stars = '';
-  var rating = review.rating || 0;
-  for (var i = 0; i < 5; i++) stars += i < rating ? '\u2605' : '\u2606';
-  var author = review.author_name || review.authorAttribution?.displayName || 'Unbekannt';
-  var text = review.text || review.text?.text || '';
-  if (typeof text === 'object' && text.text) text = text.text;
-  d.innerHTML = '<div class="stars">' + stars + '</div><div class="author">' + author + '</div><div class="text">' + (text || 'Kein Text') + '</div>';
-  out.appendChild(d);
-}
 
-var scriptLoaded = false;
-var currentKey = '';
-
-function startTest() {
-  out.innerHTML = '';
+// ========== TEST 1: REST API (bypasses Maps JS SDK completely) ==========
+async function testREST() {
+  clearOutput();
   var apiKey = document.getElementById('apiKeyInput').value.trim();
   var placeId = document.getElementById('placeIdInput').value.trim();
 
-  if (!apiKey) { log('Bitte API Key eingeben!', 'err'); return; }
-  if (!placeId) { log('Bitte Place ID eingeben!', 'err'); return; }
+  heading('Test 1: Places API (New) REST Endpoint');
+  log('Testet den API Key DIREKT gegen die REST API, ohne Maps JS SDK.');
+  log('API Key: ' + apiKey.substring(0, 15) + '...');
+  log('Place ID: ' + placeId);
+  log('');
+  log('Sende Request an places.googleapis.com...');
 
+  try {
+    var url = 'https://places.googleapis.com/v1/places/' + placeId;
+    var response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-Goog-Api-Key': apiKey,
+        'X-Goog-FieldMask': 'displayName,rating,userRatingCount,reviews,googleMapsUri'
+      }
+    });
+
+    var data = await response.json();
+    log('HTTP Status: ' + response.status, response.ok ? 'ok' : 'err');
+    log('Response: ' + JSON.stringify(data, null, 2), response.ok ? 'ok' : 'err');
+
+    if (response.ok && data.displayName) {
+      heading('ERFOLG! Reviews geladen:');
+      log('Name: ' + (data.displayName.text || data.displayName), 'ok');
+      log('Rating: ' + data.rating, 'ok');
+      log('Bewertungen: ' + data.userRatingCount, 'ok');
+      if (data.reviews) {
+        data.reviews.forEach(function(r) {
+          var card = document.createElement('div');
+          card.className = 'review-card';
+          var stars = '';
+          for (var i = 0; i < 5; i++) stars += i < r.rating ? '\u2605' : '\u2606';
+          card.innerHTML = '<div class="stars">' + stars + '</div>'
+            + '<div class="author">' + (r.authorAttribution?.displayName || '?') + '</div>'
+            + '<div class="text">' + (r.text?.text || '') + '</div>';
+          out.appendChild(card);
+        });
+      }
+      log('');
+      log('REST API funktioniert! Jetzt Test 2 (JS SDK) probieren.', 'ok');
+    } else {
+      log('');
+      if (data.error) {
+        log('Fehler-Code: ' + data.error.code, 'err');
+        log('Fehler-Status: ' + data.error.status, 'err');
+        log('Fehler-Nachricht: ' + data.error.message, 'err');
+      }
+      if (response.status === 403) {
+        log('403 = API Key hat keinen Zugriff. Moeglich: falsches Projekt, Billing-Problem, oder Key deaktiviert.', 'err');
+      }
+      if (response.status === 400) {
+        log('400 = Ungueltige Anfrage. Moeglich: Place ID falsch.', 'err');
+      }
+    }
+  } catch (e) {
+    log('Fehler: ' + e.message, 'err');
+    if (e.message.includes('CORS') || e.message.includes('NetworkError') || e.message.includes('Failed to fetch')) {
+      log('CORS blockiert den Request. Das ist normal bei Browser-Anfragen.', 'warn');
+      log('Aber: Die JS SDK Methode (Test 2) umgeht CORS. Probier Test 2.', 'warn');
+    }
+  }
+}
+
+// ========== TEST 2: JS SDK (fetchFields) ==========
+function testJSSDK() {
+  clearOutput();
+  var apiKey = document.getElementById('apiKeyInput').value.trim();
+  var placeId = document.getElementById('placeIdInput').value.trim();
+
+  heading('Test 2: Maps JS SDK + fetchFields');
   log('API Key: ' + apiKey.substring(0, 15) + '...');
   log('Place ID: ' + placeId);
   log('Lade Google Maps JS API...');
 
-  // Remove old script if key changed
-  if (currentKey !== apiKey) {
-    var oldScript = document.getElementById('gmaps-script');
-    if (oldScript) oldScript.remove();
-    // Reset google.maps
-    if (window.google && window.google.maps) {
-      delete window.google.maps;
-    }
-    scriptLoaded = false;
-    currentKey = apiKey;
-  }
-
-  if (scriptLoaded && window.google && window.google.maps) {
-    runTests(placeId);
-    return;
-  }
-
-  // Set up callback
-  window.__testCallback = function() {
-    scriptLoaded = true;
-    log('Google Maps JS API geladen (Version: ' + (google.maps.version || '?') + ')', 'ok');
-    runTests(placeId);
+  // Error handlers
+  window.gm_authFailure = function() {
+    log('gm_authFailure! Maps JS API lehnt den Key ab.', 'err');
+    log('Maps JavaScript API ist nicht aktiviert ODER Billing fehlt.', 'err');
   };
 
-  // Set up error handler
-  window.gm_authFailure = function() {
-    log('gm_authFailure aufgerufen! Das bedeutet: API Key wird von Google abgelehnt.', 'err');
-    log('Moegliche Ursachen:', 'err');
-    log('  1. Maps JavaScript API nicht aktiviert', 'err');
-    log('  2. Billing nicht aktiv oder Zahlungsmethode ungueltig', 'err');
-    log('  3. API Key geloescht oder deaktiviert', 'err');
-    log('  4. Projekt hat Quota ueberschritten', 'err');
+  // Remove old script
+  var old = document.getElementById('gm-script');
+  if (old) old.remove();
+
+  window.__cb = function() {
+    log('Maps JS API geladen (v' + (google.maps.version || '?') + ')', 'ok');
+    runFetchFields(placeId);
   };
 
   var s = document.createElement('script');
-  s.id = 'gmaps-script';
-  s.src = 'https://maps.googleapis.com/maps/api/js?key=' + apiKey + '&libraries=places&callback=__testCallback';
-  s.onerror = function() {
-    log('Script konnte nicht geladen werden (Netzwerkfehler)', 'err');
-  };
+  s.id = 'gm-script';
+  s.src = 'https://maps.googleapis.com/maps/api/js?key=' + apiKey + '&libraries=places&callback=__cb';
+  s.onerror = function() { log('Script-Ladefehler', 'err'); };
   document.body.appendChild(s);
 
-  // Timeout nach 10 Sekunden
   setTimeout(function() {
-    if (!scriptLoaded) {
-      log('TIMEOUT: Google Maps hat nach 10 Sekunden nicht geladen.', 'err');
-      log('Das deutet auf ein grundlegendes Problem mit dem API Key hin.', 'err');
+    if (!document.querySelector('.ok')) {
+      log('TIMEOUT nach 10s', 'err');
     }
   }, 10000);
 }
 
-async function runTests(placeId) {
-  // ============ NUR NEUE API TESTEN ============
-  heading('Test: Place API (New) mit fetchFields');
-  log('Importiere Places Library...');
-
+async function runFetchFields(placeId) {
   try {
-    var placesLib = await google.maps.importLibrary('places');
-    log('Places Library geladen.', 'ok');
-
-    if (!placesLib.Place) {
-      log('FEHLER: Place class nicht verfuegbar!', 'err');
-      return;
-    }
-    log('Place class verfuegbar.', 'ok');
-
-    var place = new placesLib.Place({ id: placeId });
-    log('Place-Instanz erstellt. Rufe fetchFields() auf...');
-
+    var { Place } = await google.maps.importLibrary('places');
+    log('Place class geladen.', 'ok');
+    var place = new Place({ id: placeId });
+    log('Rufe fetchFields() auf...');
     await place.fetchFields({
       fields: ['displayName', 'rating', 'userRatingCount', 'reviews', 'googleMapsURI']
     });
-
-    log('ERFOLG! Reviews geladen!', 'ok');
-    log('Name: ' + (place.displayName || '?'), 'ok');
-    log('Rating: ' + (place.rating || '?'), 'ok');
-    log('Anzahl Bewertungen: ' + (place.userRatingCount || '?'), 'ok');
-    log('Google Maps URL: ' + (place.googleMapsURI || '?'), 'ok');
-
-    var reviews = place.reviews || [];
-    if (reviews.length > 0) {
-      heading('Reviews (' + reviews.length + ' geladen):');
-      reviews.forEach(function(r) { showReview(r); });
+    log('ERFOLG!', 'ok');
+    log('Name: ' + place.displayName, 'ok');
+    log('Rating: ' + place.rating + ' (' + place.userRatingCount + ' Bewertungen)', 'ok');
+    if (place.reviews) {
+      heading('Reviews:');
+      place.reviews.forEach(function(r) {
+        var card = document.createElement('div');
+        card.className = 'review-card';
+        var stars = '';
+        var rating = r.rating || 0;
+        for (var i = 0; i < 5; i++) stars += i < rating ? '\u2605' : '\u2606';
+        card.innerHTML = '<div class="stars">' + stars + '</div>'
+          + '<div class="author">' + (r.authorAttribution?.displayName || '?') + '</div>'
+          + '<div class="text">' + (r.text || '') + '</div>';
+        out.appendChild(card);
+      });
     }
-
-    heading('ERGEBNIS');
-    log('ALLES FUNKTIONIERT! Dieser API Key + Place ID liefern Reviews.', 'ok');
-    log('Jetzt muss nur noch der Key in der Website eingesetzt werden.', 'ok');
-
   } catch (e) {
-    log('FEHLER bei fetchFields(): ' + e.message, 'err');
-    if (e.code) log('Error code: ' + e.code, 'err');
-
-    heading('Was tun?');
-    log('1. Neuen API Key erstellen:', 'warn');
-    log('   console.cloud.google.com > Credentials > + Create Credentials > API Key', 'warn');
-    log('2. Den neuen Key oben einsetzen und nochmal "Testen" klicken', 'warn');
-    log('3. Falls es mit dem neuen Key geht: Key in der Website ersetzen', 'warn');
+    log('FEHLER: ' + e.message, 'err');
+    if (e.code) log('Code: ' + e.code, 'err');
   }
+}
+
+// ========== NEUEN KEY ERSTELLEN ==========
+function testNewKey() {
+  clearOutput();
+  heading('Neuen API Key erstellen');
+  log('1. Oeffne: console.cloud.google.com/apis/credentials', 'warn');
+  log('2. Klick: "+ Anmeldedaten erstellen" > "API-Schluessel"', 'warn');
+  log('3. Kopiere den neuen Key', 'warn');
+  log('4. Paste ihn oben in das Feld', 'warn');
+  log('5. Klick "Test 1: REST API"', 'warn');
+  log('');
+  log('Falls es mit dem neuen Key geht, ersetzen wir ihn in der Website.', 'warn');
 }
 </script>
 </body>
